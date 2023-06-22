@@ -363,7 +363,7 @@ SELECT '1,000,000' + '550,000' FROM DUAL; -- 에러
 SELECT TO_NUMBER('1,000,000', '9,999,999') + TO_NUMBER('550,000','999,999') FROM DUAL;
 
 /*
-    NULL 처리 함수
+    NULL 처리 함수 if랑 비슷
     
     NVL(값1, 값2)
     - 값1이 NULL이 아니면 값1을 반환하고 값1이 NULL이면 값2를 반환
@@ -399,6 +399,152 @@ ORDER BY 2;
 SELECT NULLIF('123','123')FROM DUAL;
 SELECT NULLIF('123','456')FROM DUAL;
 
+/*
+    선택 함수 : 여러 가지 경우에 선택을 할 수 있는 기능을 제공하는 함수 switch랑 비슷
+    
+    DECODE(컬럼 | 산술연산 | 함수식, 조건값1, 결과값1, 조건값2, 결과값2, ...., 결과값N)
+    
+    - 비교하고자 하는 값이 조건값과 일치할 경우 그에 해당하는 결과값을 반환해주는 함수
+*/
+
+-- 사번, 사원명, 주민번호, 성별(남,여) 조회
+SELECT EMP_ID, EMP_NAME, EMP_NO, DECODE(SUBSTR(EMP_NO, 8,1),1, '남', 2, '여' ) "성별"
+FROM EMPLOYEE
+ORDER BY 성별 ;
+
+-- 사원명, 직급코드, 기존급여, 인상된 급여를 조회 
+-- 직큽 코드가 J7인 사원은 급여를 10% 인상
+-- 직급 코드가 J6인 사원은 급여를 15% 인상
+-- 직급 코드가 J5인 사원은 급여를 20% 인상
+-- 그 외의 직급의 사원은 급여를 5%만 인상
+-- 정렬 : 직급 코드가 J1 부터, 인상된 급여 높은 순서대로 
+SELECT EMP_NAME, JOB_CODE, SALARY, DECODE(JOB_CODE,'J7',SALARY*1.1,'J6',
+SALARY*1.15,'J5',SALARY*1.2, SALARY*1.05)"인상된 급여"
+FROM EMPLOYEE
+ORDER BY JOB_CODE ASC, "인상된 급여" DESC ;
+
+/*
+    CASE WHEN 조건식1 THEN 결과값1
+         WHEN 조건식2 THEN 결과값2
+         ...
+         ELSE 결과값 N
+    END     
+*/
+-- 사번, 사원명, 주민번호, 성별(남자, 여자) 조회
+SELECT EMP_ID,
+EMP_NAME,
+EMP_NO,
+CASE WHEN SUBSTR(EMP_NO,8,1) = 1 THEN '남자'
+     WHEN SUBSTR(EMP_NO,8,1) = 2 THEN '여자'
+     ELSE '잘못된 주민번호 입니다.'
+     END AS "성별"
+FROM EMPLOYEE
+ORDER BY "성별";
+
+-- 사원명, 급여, 급여 등급(1~4) 조회
+-- 급여 값이 500만원 초과일 경우 1등급
+-- 급여 값이 500만원 이하 350만원 초과일 경우 2등급
+-- 급여 값이 350만원 이하 200만원 초과일 경우 3등급
+-- 그 외의 경우 4등급
+
+SELECT EMP_NAME, SALARY,
+CASE WHEN SALARY > 5000000  THEN '1등급'
+     WHEN SALARY > 3500000  THEN '2등급' -- SALARY >= 5000000 AND SALARY>3500000 둘다맞음
+     WHEN SALARY > 2000000  THEN'3등급'  -- SALARY >= 3500000 AND SALARY>2000000
+     ELSE '4등급'
+     END "급여등급"
+FROM EMPLOYEE    
+ORDER BY "급여등급";
+
+-- 그룹 함수-------------------------------
+
+-- 그룹 함수는 한꺼번에 처리가능
+
+/*
+    그룹 함수
+    - 대량의 데이터들로 집계나 통계 같은 작업을 처리해야 하는 경우 사용되는 함수들
+      
+    - 모든 그룹 함수는 NULL 값을 자동으로 제외하고 값이 있는 것들만 계산
+    
+    SUM(NUMBER)
+    - 해당 컬럼 값들의 총 합계를 반환
+*/
+
+-- 전체 사원의 총 급여 합
+SELECT TO_CHAR(SUM(SALARY), 'FM999,999,999')
+FROM EMPLOYEE;
+
+-- 부서 코드가 D5인 사원들의 총 연봉 합
+
+SELECT TO_CHAR(SUM(SALARY*12), 'FM999,999,999') --TO_CHAR는 중간에 ,넣을라고 하는거 필수적인건 아님
+FROM EMPLOYEE
+WHERE DEPT_CODE = 'D5';
+
+/*
+    AVG(NUMBER)
+    - 해당 컬럼값들의 평균값을 반환
+    - 모든 그룹 함수는 NULL값을 제외 -> AVG 함수를 사용할 때 NVL 함수와 사용하는 것을 권장
+*/
+-- 전체 사원의 평균 급여 조회
+SELECT TO_CHAR(ROUND(AVG(SALARY)),'FM99,999,999')"평균 급여" -- ROUND 소숫점 제거
+FROM EMPLOYEE;
+
+SELECT AVG(BONUS) FROM EMPLOYEE;
+SELECT AVG(NVL(BONUS,0)) FROM EMPLOYEE; -- 평균값에 NULL을 제외해서 위랑 결과값이 다름 NVL 무조건 권장
+
+/*
+    MIN/MAX(모든 타입의컬럼)
+    - MIN : 해당 컬럼 값들 중에 가장 작은 값을 반환
+    - MAX : 해당 컬럼 값들 중에 가장 큰 값을 반환
+*/
+
+-- 가장 작은 값에 해당하는 사원명, 급여 , 입사일
+-- 가장 큰 값에 해당하는 사원명, 급여, 입사일
+
+SELECT MIN(EMP_NAME),MIN(SALARY),MIN(HIRE_DATE),
+MAX(EMP_NAME), MAX(SALARY), MAX(HIRE_DATE)
+FROM EMPLOYEE;
+
+/*
+    COUNT(* | 컬럼 | DISTINCT 컬럼)
+        - 컬럼 또는 행의 개수를 세서 반환
+    
+    COUNT(*) : 조회 결과에 해당하는 모든 행 개수를 반환
+    
+    COUNT(컬럼) : 해당 컬럼값이 NULL이 아닌 행의 개수를 반환
+    
+    COUNT(DISTINCT 컬럼) : 해당 컬럼값의 중복을 제거한 행의 개수를 반환
+*/
+
+-- 전체 사원수
+SELECT COUNT(*)
+FROM EMPLOYEE;
+
+-- 보너스를 받는 사원 수
+SELECT COUNT(BONUS)
+FROM EMPLOYEE;
+
+-- 부서가 배치된 사원 수
+SELECT COUNT(DEPT_CODE)
+FROM EMPLOYEE --FROM EMPLOYEE; 일케 만줘도됨
+WHERE JOB_CODE IS NOT NULL;
+
+-- 현재 사원들이 속해있는 부서 수
+SELECT COUNT(DISTINCT DEPT_CODE)
+FROM EMPLOYEE
+;
+
+-- 현재 사원들이 속해있는 있는 직급 수
+SELECT COUNT(DISTINCT JOB_CODE)
+FROM EMPLOYEE; 
+
+-- 퇴사한 직원 수
+SELECT COUNT(ENT_YN)
+FROM EMPLOYEE
+WHERE ENT_YN='Y';
+-- 위 아래 같은건가
+SELECT COUNT(ENT_DATE)
+FROM EMPLOYEE;
 
 
 
