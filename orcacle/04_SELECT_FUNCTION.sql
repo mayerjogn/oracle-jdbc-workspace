@@ -342,7 +342,7 @@ ORDER BY "입사일";
     - 숫자 또는 문자형 데이터를 날짜 타입으로 변환해서 반환    
 */
 -- 날짜 포맷 변경!
-ALTER SESSION SET NLS_DATE_FORMAT ='YYYY-MM-DD HH24:MI:SS';
+ALTER SESSION SET NLS_DATE_FORMAT ='YYYY/MM/DD HH24:MI:SS';
 
 -- 숫자 --> 날짜
 SELECT TO_DATE(20230621)FROM DUAL;
