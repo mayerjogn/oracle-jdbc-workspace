@@ -47,7 +47,7 @@ public class DBConnectionTest4 implements ServerInfo {
 				
 				// 결과가 잘 나오는지 확인 - SELECT
 				query = p.getProperty("jdbc.sql.select");
-				st =conn.prepareStatement(query);
+				st = conn.prepareStatement(query);
 				
 				ResultSet rs =st.executeQuery();
 				

@@ -56,11 +56,27 @@ public class PersonTest {
 		closeAll(conn,st);
 	}
 
-	public void removePerson(int id) {
-			
-	}
-	public void updatePerson(int id, String address) {
+	public void removePerson(int id) throws SQLException {
+		Connection conn = getConnect();
+		PreparedStatement st = conn.prepareStatement(p.getProperty("removePerson"));
+		st.setInt(1, 2);
 		
+		int result = st.executeUpdate();
+		if(result==1) {
+			System.out.println(result + "명 삭제");
+		}
+		closeAll(conn,st);
+		
+	}
+	public void updatePerson(int id, String address) throws SQLException {
+		Connection conn = getConnect();
+		PreparedStatement st = conn.prepareStatement(p.getProperty("updatePerson"));
+		st.setString(1,address);
+		int result = st.executeUpdate();
+		if(result == 1) {
+			System.out.println(result + "주소 업데이트");
+		}
+		closeAll(conn,st);
 	}
 	
 	public void searchAllPerson() {
@@ -89,9 +105,17 @@ public class PersonTest {
 		
 		pt.searchAllPerson();
 		
-		pt.removePerson(3); // 강태주
+		try {
+			pt.removePerson(3);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} // 강태주
 		
-		pt.updatePerson(1, "제주도");
+		try {
+			pt.updatePerson(1, "제주도");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		
 		pt.viewPerson(1);	
 			
