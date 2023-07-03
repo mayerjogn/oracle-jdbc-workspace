@@ -7,10 +7,12 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Properties;
 
 import config.ServerInfo;
 
+// 결과는 익스큐트 쿼리 set은 물음표 있을때마다
 public class PersonTest {
 	
 	private Properties p = new Properties();
@@ -43,6 +45,7 @@ public class PersonTest {
 	
 	
 	// 여기부터 변동적인 반복 비즈니스 로직 DAO(Database Access Object)
+	
 	public void addPerson(String name, String address) throws SQLException {
 		Connection conn = getConnect();	
 		PreparedStatement st = conn.prepareStatement(p.getProperty("addPerson"));
@@ -59,69 +62,70 @@ public class PersonTest {
 	public void removePerson(int id) throws SQLException {
 		Connection conn = getConnect();
 		PreparedStatement st = conn.prepareStatement(p.getProperty("removePerson"));
-		st.setInt(1, 2);
+		st.setInt(1, id);
 		
-		int result = st.executeUpdate();
-		if(result==1) {
-			System.out.println(result + "명 삭제");
-		}
+		int result = st.executeUpdate();	
+		System.out.println(result + "명 삭제");
+		
 		closeAll(conn,st);
-		
 	}
 	public void updatePerson(int id, String address) throws SQLException {
 		Connection conn = getConnect();
 		PreparedStatement st = conn.prepareStatement(p.getProperty("updatePerson"));
 		st.setString(1,address);
-		int result = st.executeUpdate();
-		if(result == 1) {
-			System.out.println(result + "주소 업데이트");
-		}
+		st.setInt(2, id);
+		int result = st.executeUpdate();	
+		System.out.println(result + "명 수정!");
+		
 		closeAll(conn,st);
 	}
 	
-	public void searchAllPerson() {
+	//Select
+	public void searchAllPerson() throws SQLException {
+		Connection conn = getConnect();
+		PreparedStatement st = conn.prepareStatement(p.getProperty("searchAllPerson"));
+	// 물음표가 없으니 set 할 필요가없음
+		ResultSet rs = st.executeQuery(); //이 부분만 바뀜 executeQuery
+		while(rs.next()) {
+			System.out.println(rs.getString("name")+ ", " + rs.getString("address"));
+		
+		}
 		
 	}
 	
-	public void viewPerson(int id) {
+	//Select
+	public void viewPerson(int id) throws SQLException {
+		Connection conn = getConnect();
+		PreparedStatement st = conn.prepareStatement(p.getProperty("viewPerson"));
+		st.setInt(1, id);
 		
+		ResultSet rs = st.executeQuery();
+		if(rs.next()) {
+			System.out.println(rs.getString("name")+ ", "+ rs.getString("address"));
+		}
 	}
 	public static void main(String[] args) {
 
 		PersonTest pt = new PersonTest();
-
+		
 		try {
 			Class.forName(ServerInfo.DRIVER_NAME);
 			System.out.println("Driver Loading...");
 			
-		try {
 			pt.addPerson("김강우", "서울");
 			pt.addPerson("고아라", "제주도");
 			pt.addPerson("강태주", "경기도");
-		
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		pt.searchAllPerson();
-		
-		try {
-			pt.removePerson(3);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} // 강태주
-		
-		try {
-			pt.updatePerson(1, "제주도");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		pt.viewPerson(1);	
 			
+			pt.searchAllPerson();
+			pt.removePerson(3);
+			pt.updatePerson(1, "제주도");
+			pt.viewPerson(1);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
+	
 			
 	}
 
