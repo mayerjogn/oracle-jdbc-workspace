@@ -11,13 +11,20 @@ public interface MemberDAOTemplate {
 
 	Connection getConnect() throws SQLException;
 	void closeAll(PreparedStatement st, Connection conn) throws SQLException;
-	void closeAll(ResultSet re,PreparedStatement st, Connection conn) throws SQLException;
-		
+	void closeAll(ResultSet rs, PreparedStatement st, Connection conn) throws SQLException;
+	
 	void registerMember(Member vo) throws SQLException;
-	void updatePasswordMember(Member vo) throws SQLException;
-	void updateNameMember(Member vo) throws SQLException;
+	void updatePassword(Member vo) throws SQLException;
+	void updateName(Member vo) throws SQLException;
 	
 	Member getMember(String id) throws SQLException;
 	Member login(Member vo) throws SQLException;
 	
 }
+
+
+
+
+
+
+

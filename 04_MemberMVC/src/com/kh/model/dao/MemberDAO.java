@@ -1,4 +1,5 @@
 package com.kh.model.dao;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -7,114 +8,103 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
+
 import com.kh.model.vo.Member;
+
 import config.ServerInfo;
 
-public class MemberDAO implements MemberDAOTemplate {
-	private Properties p = new Properties();
+/*
+ * dao란?
+ * Database Access Object의 약자로 디비에 접근하는 로직
+ * (일명 비즈니스 로직)을 담고 있는 객체
+ * */
 
+public class MemberDAO implements MemberDAOTemplate {
+
+	private Properties p = new Properties();
+	
 	public MemberDAO() {
 		try {
 			p.load(new FileInputStream("src/config/jdbc.properties"));
+			Class.forName(ServerInfo.DRIVER_NAME);
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 		}
 	}
 
 	public Connection getConnect() throws SQLException {
-		Connection conn = DriverManager.getConnection(ServerInfo.URL, ServerInfo.USER, ServerInfo.PASSWORD);
-		return conn;
+		return DriverManager.getConnection(ServerInfo.URL, ServerInfo.USER, ServerInfo.PASSWORD);
 	}
-
+	
 	public void closeAll(PreparedStatement st, Connection conn) throws SQLException {
-		if (st != null)
-			st.close();
-		if (conn != null)
-			conn.close();
+		st.close();
+		conn.close();
 	}
-
+	
 	public void closeAll(ResultSet rs, PreparedStatement st, Connection conn) throws SQLException {
-		if (rs != null)
-			rs.close();
+		rs.close();
 		closeAll(st, conn);
 	}
-
+	
 	public void registerMember(Member vo) throws SQLException {
 		Connection conn = getConnect();
-		PreparedStatement st = conn.prepareStatement(p.getProperty("addPerson"));
-		conn.setAutoCommit(false);
+		PreparedStatement st = conn.prepareStatement(p.getProperty("registerMember"));
 		st.setString(1, vo.getId());
 		st.setString(2, vo.getPassword());
 		st.setString(3, vo.getName());
-
-		PreparedStatement st2 = conn.prepareStatement(p.getProperty("searchAllPerson"));
-		ResultSet rs = st2.executeQuery();
-		int result = st.executeUpdate();
-
-		while (rs.next()) {
-			if (rs.getString("id").equals(vo.getId())) {
-				conn.rollback();
-				System.out.println("Id : " + vo.getId() + "가 중복되었습니다.");
-				System.out.println("Member 등록 실패");
-			} else if (result == 1) {
-				conn.commit();
-				System.out.println(vo.getName() + "님, 추가!");
-			}
-		}
+		st.executeUpdate();
 		closeAll(st, conn);
 	}
-
-	public void updatePassword(Member vo) throws SQLException {
+	
+	public void updatePassword(Member vo) throws SQLException { 
 		Connection conn = getConnect();
-		PreparedStatement st = conn.prepareStatement(p.getProperty("updatePerson"));
-		st.setString(2, vo.getId());
+		PreparedStatement st = conn.prepareStatement(p.getProperty("updatePassword"));
 		st.setString(1, vo.getPassword());
-		int result = st.executeUpdate();
-		System.out.println(result + "명 수정");
+		st.setString(2, vo.getId());
+		st.executeUpdate();
 		closeAll(st, conn);
 	}
-
+	
 	public void updateName(Member vo) throws SQLException {
 		Connection conn = getConnect();
 		PreparedStatement st = conn.prepareStatement(p.getProperty("updateName"));
-		st.setString(2, vo.getId());
 		st.setString(1, vo.getName());
-		int result = st.executeUpdate();
-		System.out.println(result + "명 수정");
+		st.setString(2, vo.getId());
+		st.executeUpdate();
 		closeAll(st, conn);
 	}
-
+	
 	public Member getMember(String id) throws SQLException {
 		Connection conn = getConnect();
-		PreparedStatement st = conn.prepareStatement(p.getProperty("viewPerson"));
+		PreparedStatement st = conn.prepareStatement(p.getProperty("getMember"));
 		st.setString(1, id);
 		ResultSet rs = st.executeQuery();
-		rs.next();
-		Member a = new Member(rs.getString("id"), rs.getString("password"), rs.getString("name"));
-		closeAll(rs, st, conn);
-		return a;
-	}
-
-	public Member login(Member vo) throws SQLException {
-		Connection conn = getConnect();
-		PreparedStatement st = conn.prepareStatement(p.getProperty("searchAllPerson"));
-		ResultSet rs = st.executeQuery();
-		while (rs.next()) {
-			Member a = new Member(rs.getString("id"), rs.getString("password"), rs.getString("name"));
-			if (vo.getId().equals(a.getId()) & vo.getPassword().equals(a.getPassword())
-					& vo.getName().equals(a.getName())) {
-				System.out.println(vo.getName() + "님 로그인에 성공하였습니다.");
-			}
+		Member m = null;
+		if(rs.next()) {
+			m = new Member(id, 
+					 rs.getString("password"), 
+					 rs.getString("name"));
 		}
 		closeAll(rs, st, conn);
-		return vo;
+		return m;
 	}
-
-	@Override
-	public void updatePasswordMember(Member vo) throws SQLException {
-	}
-
-	@Override
-	public void updateNameMember(Member vo) throws SQLException {
+	
+	public Member login(Member vo) throws SQLException {
+		Connection conn = getConnect();
+		PreparedStatement st = conn.prepareStatement(p.getProperty("login"));
+		st.setString(1, vo.getId());
+		st.setString(2, vo.getPassword());
+		ResultSet rs = st.executeQuery();
+		Member m = null;
+		if(rs.next()) {
+			m = new Member(rs.getString("id"), 
+					 rs.getString("password"), 
+					 rs.getString("name"));
+		}
+		closeAll(rs, st, conn);
+		return m;
 	}
 
 }
