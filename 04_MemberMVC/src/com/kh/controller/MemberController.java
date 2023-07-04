@@ -51,7 +51,7 @@ public class MemberController {
 	
 		try {
 			if(dao.getMember(id)!=null) {
-				dao.updatePassword(new Member(dao.getMember(id).getId(),newPw,dao.getMember(id).getName()));
+		dao.updatePassword(new Member(dao.getMember(id).getId(),newPw,dao.getMember(id).getName()));
 				return true;
 			}else {
 				
