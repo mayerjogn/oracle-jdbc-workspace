@@ -122,15 +122,14 @@ public class BookDAO implements BookDAOTemplate{
 		PreparedStatement st = conn.prepareStatement("login");
 		st.setString(1, id);
 		st.setString(2, password);
-		ResultSet rs = st.executeQuery();
-		
+		ResultSet rs = st.executeQuery();		
 		Member m = null;
-//		while(rs.next()) {
-//			m = new Member(id,
+//		/*if*/ while(rs.next()) {
+//			m = new Member(rs.getString("id"),
 //					rs.getString("password"),
 //					rs.getString("status").charAt(0));
 //		}
-			
+//			closeAll(rs,st,conn);
 		return m;
 		
 	
