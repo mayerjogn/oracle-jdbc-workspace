@@ -46,12 +46,14 @@ public class MemberController {
 
 	public boolean changePassword(String id, String oldPw, String newPw) {
 
-		// 로그인 했을 때 null이 아닌 경우
-		// 비밀번호 변경 후 true 반환, 아니라면 false 반환
+		
+		
 	
 		try {
+			// 로그인 했을 때 null이 아닌 경우
 			if(dao.getMember(id)!=null) {
 		dao.updatePassword(new Member(dao.getMember(id).getId(),newPw,dao.getMember(id).getName()));
+		// 비밀번호 변경 후 true 반환, 아니라면 false 반환
 				return true;
 			}else {
 				
