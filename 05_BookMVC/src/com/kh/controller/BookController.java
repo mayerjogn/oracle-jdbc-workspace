@@ -70,7 +70,7 @@ public class BookController {
 		// 실패의 경우도 있으니까 아이디랑 비밀번호 둘다 체크하고 boolean이고
 		// 로그인돼있는지 확인까지 해야하니 if문써서  !=null로 체크해야되는거아닌가?
 		try {
-			if(dao.deleteMember(member.getMemberId(), member.getMemberPwd())==1)
+			if(dao.deleteMember(member.getMemberId(), member.getMemberPwd())==1) // 여기도
 				return true;
 		} catch (SQLException e) {
 			e.printStackTrace();

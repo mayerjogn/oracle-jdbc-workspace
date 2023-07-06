@@ -126,7 +126,7 @@ public class BookDAO implements BookDAOTemplate{
 		ResultSet rs = st.executeQuery();	
 		
 		Member m = null;
-		if(rs.next()) {
+		if(rs.next()) { //이거 왜돌린건지 지피티 ㄱㄱ
 			m = new Member();
 					m.setMemberNo(rs.getInt("member_no"));
 					m.setMemberId(rs.getString("member_id"));
@@ -199,7 +199,7 @@ public class BookDAO implements BookDAOTemplate{
 		ResultSet rs = st.executeQuery();
 		ArrayList<Rent> rentList = new ArrayList<>();
 		
-		while(rs.next()) {
+		while(rs.next()) { //여기도 지피티 물어보기
 			Rent rent = new Rent();
 			rent.setRentNo(rs.getInt("rent_no"));
 			rent.setRentDate(rs.getDate("rent_date"));
