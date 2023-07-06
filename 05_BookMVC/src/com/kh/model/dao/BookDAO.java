@@ -68,7 +68,7 @@ public class BookDAO implements BookDAOTemplate{
 		
 		while(rs.next()) {
 			
-			book.add( new Book(rs.getInt("bk_No"),rs.getString("bk_Title")
+			book.add(new Book(rs.getInt("bk_No"),rs.getString("bk_Title")
 					,rs.getString("bk_Author")));			
 		}
 		closeAll(rs,st,conn);
@@ -119,7 +119,7 @@ public class BookDAO implements BookDAOTemplate{
 	public Member login(String id, String password) throws SQLException {
 		// char rs.getString("status").charAt(0)
 		Connection conn = getConnect();
-		PreparedStatement st = conn.prepareStatement("login");
+		PreparedStatement st = conn.prepareStatement(p.getProperty("login"));
 		
 		st.setString(1, id);
 		st.setString(2, password);		
@@ -130,7 +130,7 @@ public class BookDAO implements BookDAOTemplate{
 			m = new Member();
 					m.setMemberNo(rs.getInt("member_no"));
 					m.setMemberId(rs.getString("member_id"));
-					m.setMemberPwd(rs.getString("member_name"));
+					m.setMemberPwd(rs.getString("member_pwd"));
 					m.setMemberName(rs.getString("member_name"));					
 					m.setStatus(rs.getString("status").charAt(0));
 					m.setEnrollDate(rs.getDate("enroll_date"));
@@ -145,7 +145,7 @@ public class BookDAO implements BookDAOTemplate{
 		// status가 n이면 회원 유지, y면 회원 탈퇴
 		// n이 기본값! <--- 회원 유지!
 		Connection conn = getConnect();
-		PreparedStatement st = conn.prepareStatement("deleteMember");
+		PreparedStatement st = conn.prepareStatement(p.getProperty("deleteMember"));
 		
 		st.setString(1, id);
 		st.setString(2, password);
@@ -159,10 +159,10 @@ public class BookDAO implements BookDAOTemplate{
 	public int rentBook(Rent rent) throws SQLException {
 		// 책 대여 기능 INSERT ~~ TB_RENT
 		Connection conn = getConnect();
-		PreparedStatement st = conn.prepareStatement("rentBook");
+		PreparedStatement st = conn.prepareStatement(p.getProperty("rentBook"));
 		
 		st.setInt(1, rent.getMember().getMemberNo());
-		st.setInt(2, rent.getBook().getBkNO());
+		st.setInt(2, rent.getBook().getBkNo());
 		
 		int result = st.executeUpdate();
 		closeAll(st,conn);
@@ -173,7 +173,7 @@ public class BookDAO implements BookDAOTemplate{
 	public int deleteRent(int no) throws SQLException {
 		// UPDATE - STATUS를 Y로!
 		Connection conn = getConnect();
-		PreparedStatement st = conn.prepareStatement("deleteRent");
+		PreparedStatement st = conn.prepareStatement(p.getProperty("deleteRent"));
 		
 		st.setInt(1, no);	
 		
@@ -193,7 +193,7 @@ public class BookDAO implements BookDAOTemplate{
 		// rest.setBook(new Book(rs.getString("bk_title"), rs.getString("bk_author")));
 		
 		Connection conn = getConnect();
-		PreparedStatement st = conn.prepareStatement("printRentBook");
+		PreparedStatement st = conn.prepareStatement(p.getProperty("printRentBook"));
 		
 		st.setString(1, id);		
 		ResultSet rs = st.executeQuery();

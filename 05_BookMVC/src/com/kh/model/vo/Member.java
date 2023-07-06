@@ -4,19 +4,6 @@ import java.util.Date;
 
 public class Member {
 	
-	public Member() {}
-	public Member(String id, String password, String name) {
-		
-	}
-	public Member(int memberNo, String memberId, String memberPwd, String memberName, char status, Date enrollDate) {
-		super();
-		this.memberNo = memberNo;
-		this.memberId = memberId;
-		this.memberPwd = memberPwd;
-		this.memberName = memberName;
-		this.status = status;
-		this.enrollDate = enrollDate;
-	}
 	private int memberNo;
 	private String memberId;
 	private String memberPwd;
@@ -24,13 +11,15 @@ public class Member {
 	private char status;
 	private Date enrollDate;
 	
-	public Member(String id, String password) {
-		
+	public Member() {}
+	public Member(String id, String password, String name) {
+		this.memberId = id;
+		this.memberPwd = password;
+		this.memberName = name;
 	}
-
 	
-
-	public Member(int memberNo2) {
+	public Member(int memberNo) {
+		this.memberNo = memberNo;
 	}
 	public int getMemberNo() {
 		return memberNo;

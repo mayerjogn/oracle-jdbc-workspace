@@ -4,23 +4,24 @@ import java.util.Date;
 
 public class Rent {
 
+	private int rentNo;
+	private Member member;
+	private Book book;
+	private Date rentDate;
 	
+	public Rent() {}
+		
 	public Rent(int rentNo, Member member, Book book, Date rentDate) {
-		super();
 		this.rentNo = rentNo;
 		this.member = member;
 		this.book = book;
 		this.rentDate = rentDate;
 	}
-	
 	public Rent(Member member, Book book) {
 		this.member = member;
 		this.book = book;
 	}
-	private int rentNo;
-	private Member member;
-	private Book book;
-	private Date rentDate;
+	
 	
 	public int getRentNo() {
 		return rentNo;
