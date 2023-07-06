@@ -8,39 +8,42 @@ package com.kh.model.vo;
 
 public class Member {
 
-	private String id;
-	private String password;
-	private String name;
+	private String memberId;
+	private String memberPwd;
+	private String memberName;
+	private int memberNo;
 	
 	public Member() {}
 	public Member(String id, String password, String name) {
-		this.id = id;
-		this.password = password;
-		this.name = name;
+		this.memberId = id;
+		this.memberPwd = password;
+		this.memberName = name;
 	}
-	
+	public Member(int memberNo) {
+		this.memberNo = memberNo;
+	}
 	public String getId() {
-		return id;
+		return memberId;
 	}
 	public void setId(String id) {
-		this.id = id;
+		this.memberId = id;
 	}
 	public String getPassword() {
-		return password;
+		return memberPwd;
 	}
 	public void setPassword(String password) {
-		this.password = password;
+		this.memberPwd = password;
 	}
 	public String getName() {
-		return name;
+		return memberName;
 	}
 	public void setName(String name) {
-		this.name = name;
+		this.memberName = name;
 	}
 	
 	@Override
 	public String toString() {
-		return "Member [id=" + id + ", password=" + password + ", name=" + name + "]";
+		return "Member [id=" + memberId + ", password=" + memberPwd + ", name=" + memberName + "]";
 	}
 
 }

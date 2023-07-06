@@ -10,7 +10,7 @@
     * 블록(Block) : 명령어를 모아 둔 PL/SQL 프로그램의 기본 단위   
     
     * PL/SQL 구조
-    - [선언부(DECLARE SECTION)] : DECLARE로 시작, 변수나 상수를 선언 및 초기화하는 부분
+    - [선언부(DECLARE SECTION)] : DECLARE로 시작, 변수나 상수를 선언 및 초기화하는 부분 (중요) 변수가 없으면 안쓰는 경우도있음
     
     - 실행부(EXECUTABLE SECTION) : BEGIN으로 시작, SQL문 또는 제어문(조건문,반복문)등의 로직을 기술하는 부분
     

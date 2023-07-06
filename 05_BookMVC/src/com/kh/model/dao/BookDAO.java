@@ -27,7 +27,7 @@ public class BookDAO implements BookDAOTemplate{
 				p.load(new FileInputStream("src/config/jdbc.properties"));
 				try {
 					Class.forName(ServerInfo.DRIVER_NAME);
-					System.out.println("driver loading...");
+					
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
 				}
@@ -68,15 +68,16 @@ public class BookDAO implements BookDAOTemplate{
 		
 		while(rs.next()) {
 			
-			book.add( new Book(rs.getInt("bk_No"),rs.getString("bk_Title"),rs.getString("bk_Author")));			
+			book.add( new Book(rs.getInt("bk_No"),rs.getString("bk_Title")
+					,rs.getString("bk_Author")));			
 		}
-		
+		closeAll(rs,st,conn);
 		return book;
 	}
 
 	@Override
 	public int registerBook(Book book) throws SQLException {
-		// 반환값 타입이 int인 경우 다 st.executeUpdate()!
+		// 반환값 타입이 int인 경우 무조건 st.executeUpdate()!
 		Connection conn = getConnect();
 		PreparedStatement st = conn.prepareStatement(p.getProperty("registerBook"));
 		
@@ -92,14 +93,11 @@ public class BookDAO implements BookDAOTemplate{
 	public int sellBook(int no) throws SQLException {
 		Connection conn = getConnect();
 		PreparedStatement st = conn.prepareStatement(p.getProperty("sellBook"));
-		st.setInt(1, no);
 		
+		st.setInt(1, no);		
 		int result = st.executeUpdate();
-		
 		closeAll(st,conn);
-		// 책 삭제! DELETE문!
-		
-		
+		// 책 삭제! DELETE문!				
 		return result;
 	}
 
@@ -107,9 +105,11 @@ public class BookDAO implements BookDAOTemplate{
 	public int registerMember(Member member) throws SQLException {
 		Connection conn = getConnect();
 		PreparedStatement st = conn.prepareStatement(p.getProperty("registerMember"));
-		st.setInt(1, member.getMemberNo());
-		st.setString(2, member.getMemberId());
+		
+		st.setString(1, member.getMemberId());
+		st.setString(2, member.getMemberPwd());
 		st.setString(3, member.getMemberName());
+		
 		int result = st.executeUpdate();
 		closeAll(st,conn);
 		return result;
@@ -120,19 +120,23 @@ public class BookDAO implements BookDAOTemplate{
 		// char rs.getString("status").charAt(0)
 		Connection conn = getConnect();
 		PreparedStatement st = conn.prepareStatement("login");
-		st.setString(1, id);
-		st.setString(2, password);
-		ResultSet rs = st.executeQuery();		
-		Member m = null;
-//		/*if*/ while(rs.next()) {
-//			m = new Member(rs.getString("id"),
-//					rs.getString("password"),
-//					rs.getString("status").charAt(0));
-//		}
-//			closeAll(rs,st,conn);
-		return m;
 		
-	
+		st.setString(1, id);
+		st.setString(2, password);		
+		ResultSet rs = st.executeQuery();	
+		
+		Member m = null;
+		if(rs.next()) {
+			m = new Member();
+					m.setMemberNo(rs.getInt("member_no"));
+					m.setMemberId(rs.getString("member_id"));
+					m.setMemberPwd(rs.getString("member_name"));
+					m.setMemberName(rs.getString("member_name"));					
+					m.setStatus(rs.getString("status").charAt(0));
+					m.setEnrollDate(rs.getDate("enroll_date"));
+		}
+			closeAll(rs,st,conn);
+		return m;	
 	}
 
 	@Override
@@ -142,8 +146,10 @@ public class BookDAO implements BookDAOTemplate{
 		// n이 기본값! <--- 회원 유지!
 		Connection conn = getConnect();
 		PreparedStatement st = conn.prepareStatement("deleteMember");
+		
 		st.setString(1, id);
 		st.setString(2, password);
+		
 		int result = st.executeUpdate();
 		closeAll(st,conn);
 		return result;
@@ -155,7 +161,12 @@ public class BookDAO implements BookDAOTemplate{
 		Connection conn = getConnect();
 		PreparedStatement st = conn.prepareStatement("rentBook");
 		
-		return 0;
+		st.setInt(1, rent.getMember().getMemberNo());
+		st.setInt(2, rent.getBook().getBkNO());
+		
+		int result = st.executeUpdate();
+		closeAll(st,conn);
+		return result;
 	}
 
 	@Override
@@ -163,6 +174,9 @@ public class BookDAO implements BookDAOTemplate{
 		// UPDATE - STATUS를 Y로!
 		Connection conn = getConnect();
 		PreparedStatement st = conn.prepareStatement("deleteRent");
+		
+		st.setInt(1, no);	
+		
 		int result = st.executeUpdate();
 		closeAll(st,conn);
 		return result;
@@ -177,7 +191,23 @@ public class BookDAO implements BookDAOTemplate{
 		// while문 안에서 ! Rent rent = new Rent();
 		// setter 사용!
 		// rest.setBook(new Book(rs.getString("bk_title"), rs.getString("bk_author")));
-		return null;
+		
+		Connection conn = getConnect();
+		PreparedStatement st = conn.prepareStatement("printRentBook");
+		
+		st.setString(1, id);		
+		ResultSet rs = st.executeQuery();
+		ArrayList<Rent> rentList = new ArrayList<>();
+		
+		while(rs.next()) {
+			Rent rent = new Rent();
+			rent.setRentNo(rs.getInt("rent_no"));
+			rent.setRentDate(rs.getDate("rent_date"));
+			rent.setBook(new Book(rs.getString("bk_title"), rs.getString("bk_author")));
+			rentList.add(rent);
+		}
+		closeAll(rs, st, conn);
+		return rentList;
 	}
 
 }

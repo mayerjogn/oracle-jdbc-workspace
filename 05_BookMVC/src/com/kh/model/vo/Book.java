@@ -7,11 +7,12 @@ public class Book {
 		this.bkTitle = title;
 		this.bkAuthor = author;
 	}
-	public Book(int bkNO, String bkTitle, String bkAuthor) {
+	public Book(int bkNO) {
 		this.bkNO = bkNO;
 		this.bkTitle = bkTitle;
 		this.bkAuthor = bkAuthor;
 	}
+	
 	private int bkNO;
 	private String bkTitle;
 	private String bkAuthor;

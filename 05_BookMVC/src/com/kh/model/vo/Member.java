@@ -30,6 +30,8 @@ public class Member {
 
 	
 
+	public Member(int memberNo2) {
+	}
 	public int getMemberNo() {
 		return memberNo;
 	}
