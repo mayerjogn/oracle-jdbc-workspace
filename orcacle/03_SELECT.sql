@@ -88,7 +88,7 @@
  SELECT *
  FROM JOB;
  
- SELECT  JOB_NAME
+ SELECT JOB_NAME
  FROM JOB;
  
  SELECT * 
@@ -145,7 +145,7 @@ FROM EMPLOYEE;
     - 즉, 리터럴은 결과에 해당하는 RESULT SET의 모든행에 반복적으로 출력된다.   
 */
 
--- EMPLOYEE 테이블에서 사원, 직원명, 급여, 단위(원) 조회 '원' <- 요게 리터럴
+-- EMPLOYEE 테이블에서 사번, 직원명, 급여, 단위(원) 조회 '원' <- 요게 리터럴
 
 SELECT EMP_ID AS 사번,EMP_NAME AS 직원명,SALARY AS 급여,'원' AS "단위(원)"
 FROM EMPLOYEE;
